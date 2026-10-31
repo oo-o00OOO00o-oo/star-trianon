@@ -1,0 +1,274 @@
+/* =====================================================================
+   starry phase 2 · 对话记录卡片 = 三段式异形像素轮廓
+
+   每张卡片只加一个 class（.pxcard + .px-moon/.px-star/.px-house/.px-mtn），
+   外形全部由卡片自己的四层背景画出，DOM 一个子节点都不加 —— 流式打字、
+   diff 展开、窗口缩放都不会把轮廓弄坏：
+
+     1. 顶部异形 SVG 盖      （按 190 单位网格等比缩放，不随文字纵向变形）
+     2. 顶盖下方的挂件层      （月亮下半 / 星徽舱，只有月亮和星星有）
+     3. 中段 1px 侧墙切片     （preserveAspectRatio="none"，纵向拉伸不失真）
+     4. 底部异形 SVG 盖      （台阶基座 / 气泡尾尖 / 山脚岩层）
+
+   像素高度由 pixel_cards.js 按卡片实际宽度算出，写进 --pc-t / --pc-b /
+   --pc-pod。旧皮肤（starry.css）里的方框气泡、方框工具卡都由这里以
+   更高优先级的选择器盖掉。
+   ===================================================================== */
+
+:root {
+  --px-navy: #0D1B2E;
+  --px-gold: #F2C14E;
+  --px-ink: #E6EDF5;
+  --px-mute: #8FA3BF;
+  /* 唯一一扇暖金亮窗：工具调用卡片行首的小窗，固定像素比例 */
+  --px-win: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 9 11' shape-rendering='crispEdges'%3E%3Cg fill='%23F2C14E'%3E%3Crect x='2' y='0' width='5' height='1'/%3E%3Crect x='1' y='1' width='7' height='8'/%3E%3Crect x='0' y='9' width='9' height='1'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* ---------------------------------------------------------------------
+   基础几何：四层背景 + 上下内边距让开顶盖/底盖
+   --------------------------------------------------------------------- */
+.row.out .b.pxcard,
+.row.in .col > .b.pxcard,
+.thread .tn.pxcard,
+.thread .tool.pxcard,
+.thread .ts-p.pxcard {
+  --pc-t: 0px;
+  --pc-b: 0px;
+  --pc-pod: 0px;
+  --pc-pt: 6px;
+  --pc-pb: 6px;
+  position: relative;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background-color: transparent !important;
+  background-image: var(--pc-img) !important;
+  background-repeat: no-repeat !important;
+  /* 顶盖 / 挂件 / 中段侧墙 / 底盖 */
+  background-position: 0 0, 0 var(--pc-t), 0 var(--pc-t), 0 100% !important;
+  background-size: 100% var(--pc-t), 100% var(--pc-pod),
+                  100% calc(100% - var(--pc-t) - var(--pc-b)), 100% var(--pc-b) !important;
+  background-origin: border-box !important;
+  background-clip: border-box !important;
+  padding-top: calc(var(--pc-t) + var(--pc-pt)) !important;
+  padding-bottom: calc(var(--pc-b) + var(--pc-pb)) !important;
+  image-rendering: pixelated;
+}
+
+/* ---------------------------------------------------------------------
+   用户消息 · 月亮气泡（左壁 x=5，右壁 x=182，右上角新月挂件）
+   --------------------------------------------------------------------- */
+.row.out .b.px-moon {
+  width: fit-content;
+  max-width: min(100%, 58em);
+  margin-left: auto;
+  padding-left: 38px !important;
+  padding-right: 70px !important;
+  text-align: left;
+  color: var(--px-ink) !important;
+  font-family: 'Songti SC', 'SimSun', 'NSimSun', serif !important;
+  font-size: 15px !important;
+  font-weight: 400 !important;
+  line-height: 1.9 !important;
+  letter-spacing: 0 !important;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.row.out .b.px-moon::before,
+.row.out .b.px-moon::after { content: none !important; }
+
+/* ---------------------------------------------------------------------
+   助手消息 · 星星气泡（主左壁 x=9，右壁 x=184，左上星徽凸起舱）
+   --------------------------------------------------------------------- */
+.row.in .col > .b.px-star {
+  width: fit-content;
+  max-width: 100%;
+  min-width: 0;
+  padding-left: 74px !important;
+  padding-right: 38px !important;
+  color: var(--px-ink) !important;
+  font-family: 'Songti SC', 'SimSun', 'NSimSun', serif !important;
+  font-size: 15px !important;
+  font-weight: 400 !important;
+  line-height: 1.9 !important;
+  letter-spacing: 0 !important;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.row.in .col > .b.px-star + .b { margin-top: 16px !important; }
+.row.in .col > .b.px-star::before { content: none !important; }
+/* 气泡右下角那行很淡的签名水印：挪到底盖上方，别压住像素尾巴 */
+.row.in .col > .b.px-star::after {
+  content: 'for 妁妁 only' !important;
+  position: absolute !important;
+  left: auto !important;
+  right: 30px !important;
+  bottom: 6px !important;
+  display: block !important;
+  width: auto !important;
+  height: auto !important;
+  border: 0 !important;
+  background: none !important;
+  clip-path: none !important;
+  font-family: Georgia, serif !important;
+  font-style: italic !important;
+  font-size: 10px !important;
+  letter-spacing: .06em !important;
+  color: rgba(242, 193, 78, .34) !important;
+}
+
+/* ---------------------------------------------------------------------
+   工具调用记录 · 线框屋顶房屋卡片（屋身左墙 x=14，右墙 x=175）
+   --------------------------------------------------------------------- */
+.thread .tn.px-house,
+.thread .tool.px-house {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  min-height: 0 !important;
+}
+.thread .tn.px-house::before,
+.thread .tn.px-house::after { content: none !important; }
+
+.px-house .tn-p {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+  overflow: visible;
+}
+.px-house .tn-p::before,
+.px-house .tn-p::after { content: none !important; }
+
+.px-house .tn-h {
+  height: 46px !important;
+  min-width: 0;
+  padding: 0 42px 0 52px !important;
+}
+.px-house .tn-h::before {
+  content: '';
+  flex: none;
+  width: 20px;
+  height: 24px;
+  margin-right: 2px;
+  background: var(--px-win) 0 0 / 100% 100% no-repeat;
+  image-rendering: pixelated;
+}
+.px-house .tn-h .nm {
+  margin-left: 6px !important;
+  flex: none;
+  max-width: 34%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--px-gold) !important;
+  font-family: Consolas, 'Courier New', monospace !important;
+  font-size: 12.6px !important;
+  font-weight: 700 !important;
+  letter-spacing: .02em !important;
+}
+.px-house .tn-h .ar {
+  flex: 1;
+  min-width: 0;
+  color: #D7E3F2 !important;
+  font-family: Consolas, 'Courier New', monospace !important;
+  font-size: 11.6px !important;
+}
+.px-house .tn-h .meta { flex: none; color: var(--px-mute) !important; }
+.px-house .tn-h .meta .n { border-radius: 0; }
+.px-house .tn-h.hov,
+.px-house .tn-h:hover {
+  background: linear-gradient(90deg, rgba(242, 193, 78, 0), rgba(242, 193, 78, .05) 30%, rgba(242, 193, 78, .05)) !important;
+}
+
+/* 工具组容器自己不是卡片：去掉旧皮肤给它的方框和山脊线，让一组房子浮在纸上 */
+.tgrp {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 8px 0 0 !important;
+}
+.tgrp::before { content: none !important; }
+
+/* 工具组里上下两张房子之间留出屋顶的空隙 */
+.tg-b .tn.px-house + .tn.px-house { margin-top: 18px !important; }
+
+/* 展开的 diff / 命令输出：房子里的一块深色校样，不再另套轮廓 */
+.px-house .prf,
+.px-house .so {
+  border: 1px solid rgba(242, 193, 78, .22) !important;
+  border-radius: 0 !important;
+  background: #091627 !important;
+  box-shadow: none !important;
+}
+.px-house .prf::after { content: none !important; }
+
+/* 旧版（历史记录）的工具条，同一套房子 */
+.px-house.tool .th {
+  padding: 10px 42px 10px 52px !important;
+  color: #D7E3F2 !important;
+}
+.px-house.tool .th::before {
+  content: '';
+  flex: none;
+  width: 20px;
+  height: 24px;
+  margin-right: 2px;
+  background: var(--px-win) 0 0 / 100% 100% no-repeat;
+  image-rendering: pixelated;
+}
+.px-house.tool .th .dot { display: none !important; }
+.px-house.tool .th .nm {
+  color: var(--px-gold) !important;
+  font-family: Consolas, 'Courier New', monospace !important;
+  font-weight: 700;
+}
+.px-house.tool .th .ar { color: #D7E3F2 !important; }
+.px-house.tool .th .d { color: var(--px-mute) !important; }
+.px-house.tool .tb {
+  margin: 0 42px 12px 52px;
+  padding: 8px 12px 9px !important;
+  border: 1px solid rgba(242, 193, 78, .22) !important;
+  background: #091627;
+  font-family: Consolas, 'Courier New', monospace;
+  font-size: 11.4px;
+  line-height: 1.7;
+}
+.px-house.tool .tb .dim { color: var(--px-mute); }
+.px-house.tool .tb .del { color: #FF7B72; }
+.px-house.tool .tb .add { color: #7CE38B; }
+
+/* ---------------------------------------------------------------------
+   附属结果内容 · 大山卡片（左岩壁 x=5，右岩壁 x=184）
+   --------------------------------------------------------------------- */
+.thread .ts-p.px-mtn {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  overflow: hidden;
+}
+.thread .ts-p.px-mtn::before { content: none !important; }
+.thread .ts-p.px-mtn .ts-h { padding: 0 34px 0 40px !important; }
+.thread .ts-p.px-mtn .ts-list { margin: 0 34px 12px 40px !important; }
+
+/* 历史记录里的旧代码块：不套轮廓，只做成深蓝校样，跟房子里的 diff 同一套 */
+.thread pre {
+  border: 1px solid rgba(242, 193, 78, .22) !important;
+  border-radius: 0 !important;
+  background: #07111F !important;
+  box-shadow: none !important;
+  color: #DCE6F2 !important;
+  font-family: Consolas, 'Courier New', monospace;
+}
+.thread pre .k { color: #9FB2E0; }
+.thread pre .f { color: #E8D9A6; }
+.thread pre .c { color: var(--px-mute); }
+
+/* ---------------------------------------------------------------------
+   卡片内的通用小件（深蓝底上一直用这套）
+   --------------------------------------------------------------------- */
+.pxcard a { color: var(--px-gold); }
+.pxcard code {
+  padding: 1px 5px;
+  border: 1px solid rgba(242, 193, 78, .28);
+  background: rgba(242, 193, 78, .07);
+  color: #E8D9A6;
+  font-size: .92em;
+}

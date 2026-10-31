@@ -1,0 +1,84 @@
+/* =====================================================================
+   右侧卷宗 · 拉手 → 人物（rp_actor.js 的舞台）
+   原来那截燕麦色书脊 + 丝绒蝴蝶结不要了，换成站在右缘的芭蕾侍者：
+   靠过去她从火花里浮现（fx-sparkle），站住循环（ballet-spin），
+   点她 → 卷宗掀开；不点 → 火花倒放收回去。
+   ===================================================================== */
+
+html body.rd-on #rpTab.rpa {
+  position: fixed !important;
+  right: 0 !important;
+  top: max(64px, 9vh) !important;
+  bottom: auto !important;
+  /* 高度必须写死成同一个 clamp：只给 aspect-ratio 的话子层的 height:100% 会算成 0 */
+  width: clamp(330px, 33vw, 502px) !important;
+  height: calc(clamp(330px, 33vw, 502px) * 306 / 502) !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+  transform: none !important;
+  overflow: visible !important;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .22s ease;
+  z-index: 44;
+  cursor: default;
+}
+html body.rd-on #rpTab.rpa.on { opacity: 1; }
+/* 文件 / 设置 / 搜索这些页面占着右侧时，人不要出来 */
+html body.rd-on:is(.fl-open, .st-open, .sr-on, .br-on, .cl-on, .tm-on) #rpTab.rpa { opacity: 0 !important; }
+
+#rpTab.rpa .rpa-stage {
+  position: absolute;
+  inset: 0;
+  display: block;
+  pointer-events: none;
+}
+#rpTab.rpa .rpa-fx,
+#rpTab.rpa .rpa-spin {
+  position: absolute;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  filter: drop-shadow(0 16px 26px rgba(2, 8, 18, .55));
+  transition: opacity .28s ease;
+}
+/* 火花序列里的角色画得比旋转序列小一圈（帧内留白多）：按 1.12 放大，
+   以“脚底 + 身体中线”为基准，站出来时和 ballet-spin 同高、同位置 */
+#rpTab.rpa .rpa-fx {
+  left: -5.54%;
+  top: -11.37%;
+  width: 112%;
+  height: 112%;
+  opacity: 1;
+}
+/* 旋转序列窄，按“角色身体中心”对齐到火花的角色位置（127/502, 219/502） */
+#rpTab.rpa .rpa-spin {
+  left: 25.3%;
+  top: 0;
+  width: 43.62%;
+  height: 100%;
+  opacity: 0;
+}
+#rpTab.rpa.hold .rpa-fx { opacity: 0; }
+#rpTab.rpa.hold .rpa-spin { opacity: 1; }
+
+/* 只有角色身上这一块接点击；透明羽化区不挡对话流，光标也不变化 */
+#rpTab.rpa .rpa-hit {
+  position: absolute;
+  left: 30%;
+  top: 4%;
+  width: 38%;
+  height: 92%;
+  pointer-events: none;
+  cursor: default;
+}
+#rpTab.rpa.on .rpa-hit { pointer-events: auto; }
+
+@media (prefers-reduced-motion: reduce) {
+  #rpTab.rpa .rpa-fx,
+  #rpTab.rpa .rpa-spin { transition: none; }
+}

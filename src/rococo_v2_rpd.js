@@ -20,13 +20,8 @@ folio.insertAdjacentHTML('beforeend',`<div class="rd-head" aria-hidden="true"><e
   `<div class="rd-seal" aria-hidden="true"><i class="rd-halo"></i><img src="${IMG.seal}" alt="" draggable="false"></div>`);
 const seal=folio.querySelector('.rd-seal'),ht=folio.querySelector('.rd-ht');
 
-/* ---- spine + ribbon + half-open cover live in the pull tab (#rpTab, made by rococo_v2_rp.js) ---- */
-const mountTab=()=>{const tab=document.getElementById('rpTab');if(!tab||tab.querySelector('.rd-spine'))return!!tab;
-  tab.insertAdjacentHTML('beforeend',`<span class="rd-cov" aria-hidden="true"><img src="${IMG.cover}" alt="" draggable="false"><i></i></span>`+
-    `<span class="rd-spine" aria-hidden="true"><img src="${IMG.spine}" alt="" draggable="false"><span class="rd-lab"><em>Dossier</em><b>卷 宗</b><i>N° 12</i></span></span>`+
-    `<span class="rd-rib" aria-hidden="true"><img class="rd-band" src="${IMG.band}" alt="" draggable="false"><img class="rd-bow" src="${IMG.bow}" alt="" draggable="false">`+
-    `<img class="rd-tl rd-t1" src="${IMG.tail}" alt="" draggable="false"><img class="rd-tl rd-t2" src="${IMG.tail}" alt="" draggable="false"></span>`);return true};
-if(!mountTab()){const mo=new MutationObserver(()=>{if(mountTab())mo.disconnect()});mo.observe(b,{childList:true})}
+/* ---- 书脊 / 丝带 / 半开封面不再挂到 #rpTab 上：拉手换成了那位人物（starry/rp_actor.js）。
+        卷宗本身的开合（.folio 绕书脊转出来、火漆印呼吸、索引卡与星轨）不受影响。 ---- */
 
 /* ---- per dossier: two index cards + the pocket with the star track ---- */
 const A0=46*Math.PI/180,R=157,CX=125,CY=179;          // arc geometry in the 250x96 svg (apex at y 22)

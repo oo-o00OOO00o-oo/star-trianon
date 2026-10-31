@@ -108,42 +108,8 @@ html body.rp-open .folio.rd-on{transform:perspective(2400px) rotateY(0deg)!impor
 .rd-cap .rd-d{display:block;margin-top:4px;font:italic 12px/1.3 "CormI",serif;color:rgba(43,56,102,.5)}
 .rd-hide{display:none}
 
-/* ---- the spine = the pull tab ---- */
-html body.rd-on #rpTab{right:0!important;top:14px!important;width:40px!important;height:872px!important;z-index:44;transform:translateX(64px);
-  transition:transform .55s cubic-bezier(.24,1.2,.4,1)!important}
-html body.rd-on.rp-peek #rpTab,html body.rd-on.rp-open #rpTab{transform:translateX(0)}
-html body.rd-on:is(.fl-open,.st-open,.sr-on,.br-on,.cl-on,.tm-on) #rpTab{transform:translateX(130px)!important;right:0!important}
-body.rd-on #rpTab>.rp-paper,body.rd-on #rpTab>.rp-tail{display:none!important}
-.rd-spine{position:absolute;inset:0;filter:drop-shadow(-3px 4px 6px rgba(43,56,102,.16))}
-.rd-spine>img{position:absolute;inset:0;width:100%;height:100%;user-select:none}
-.rd-lab{position:absolute;left:7px;right:7px;top:526px;height:202px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px}
-.rd-lab em{font:normal 17px/1 "Pinyon",serif;color:#2b3866;writing-mode:vertical-rl;transform:rotate(180deg)}
-.rd-lab b{font:600 10.5px/1.15 "Noto Serif CJK SC","Noto Serif SC",serif;color:#2E3A63;writing-mode:vertical-rl;letter-spacing:.24em}
-.rd-lab i{font:italic 10px/1 "CormI",serif;color:rgba(43,56,102,.55);writing-mode:vertical-rl;transform:rotate(180deg)}
-body.rd-on #rpTab:hover .rd-bow{rotate:-4deg}
-/* velvet ribbon: tied round the spine when shut, untied tails hanging down its edge when open */
-.rd-rib{position:absolute;left:0;top:262px;width:40px;height:0;pointer-events:none}
-.rd-band{position:absolute;left:-2px;top:-10px;width:46px;height:20px;transition:opacity .25s ease .05s;filter:drop-shadow(0 1.5px 1.5px rgba(43,56,102,.25))}
-.rd-bow{position:absolute;left:-24px;top:-30px;width:66px;height:auto;transform-origin:50% 28%;
-  transition:opacity .3s ease,transform .38s cubic-bezier(.5,0,.75,.3),rotate .3s ease;filter:drop-shadow(-1px 3px 3px rgba(43,56,102,.28))}
-.rd-tl{position:absolute;top:-6px;height:auto;transform-origin:50% 0;opacity:0;filter:saturate(.72) brightness(1.38) drop-shadow(-1px 2px 2px rgba(43,56,102,.22));transition:opacity .2s ease}
-.rd-t1{left:-9px;width:15px}
-.rd-t2{left:-1px;width:13px}
-body.rp-open .rd-band{opacity:0}
-body.rp-open .rd-bow{opacity:0;transform:scale(.45,.7) translateY(14px) rotate(-14deg)}
-body.rp-open .rd-tl{opacity:1;transition:opacity .12s ease .12s}
-body.rp-open .rd-t1{animation:rdDrop1 1.9s cubic-bezier(.3,.6,.4,1) .1s both}
-body.rp-open .rd-t2{animation:rdDrop2 2.2s cubic-bezier(.3,.6,.4,1) .16s both}
-@keyframes rdDrop1{0%{transform:rotate(-78deg) scaleY(.32)}26%{transform:rotate(14deg) scaleY(1)}44%{transform:rotate(-8deg)}62%{transform:rotate(4.5deg)}80%{transform:rotate(-2deg)}100%{transform:rotate(0)}}
-@keyframes rdDrop2{0%{transform:rotate(70deg) scaleY(.3)}28%{transform:rotate(-12deg) scaleY(1)}46%{transform:rotate(7deg)}64%{transform:rotate(-3.5deg)}82%{transform:rotate(1.5deg)}100%{transform:rotate(0)}}
-body:not(.rp-open) .rd-bow{transition:opacity .3s ease .42s,transform .5s cubic-bezier(.25,1.4,.4,1) .42s,rotate .3s ease}
-body:not(.rp-open) .rd-band{transition:opacity .2s ease .4s}
-/* the front cover, left just ajar on the spine (half-open) */
-.rd-cov{position:absolute;right:40px;top:0;width:310px;height:872px;transform-origin:100% 50%;transform:perspective(2400px) rotateY(-89.5deg);opacity:0;
-  transition:transform .5s cubic-bezier(.55,0,.8,.25),opacity .14s linear .36s;pointer-events:none}
-.rd-cov>img{position:absolute;inset:0;width:100%;height:100%}
-.rd-cov>i{position:absolute;inset:0;background:linear-gradient(90deg,rgba(43,56,102,.0),rgba(43,56,102,.06) 60%,rgba(43,56,102,.22));border-radius:9px 0 0 9px}
-body.rp-open .rd-cov{transform:perspective(2400px) rotateY(-84.5deg);opacity:1;transition:transform 1.1s cubic-bezier(.2,.75,.22,1) .4s,opacity .1s linear .3s}
+/* 拉手换成了那位人物（starry/rp_actor.*）：书脊 / 丝带 / 半开封面这一整套样式连同它的感应范围一起删掉 */
+
 @media (prefers-reduced-motion:reduce){
   html body.rp-open .folio.rd-on,html body:not(.rp-open) .folio.rd-on{transition:opacity .25s ease!important}
   html body:not(.rp-open) .folio.rd-on{transform:none!important}

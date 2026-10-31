@@ -14,7 +14,7 @@
   size     identical embedded images are stored once (window.__IMG table + CSS custom properties)
 Old standalone hashes keep working: #empty #chat #stream … (rococo) · #files #preview #at … (files) · #account #appearance
 #permission #engine … (settings) · #boot #reconnect #crash … (engine). #play = merged navigation demo."""
-import os, re, sys, base64, hashlib
+import os, re, sys, base64, hashlib, json
 
 HERE = './'
 OUT = os.environ.get('TRIANON_OUT', '../dist/trianon.html')
@@ -67,6 +67,9 @@ def sub1(a, z):
     assert s.count(a) == 1, (a[:80], s.count(a))
     s = s.replace(a, z)
 
+sub1('<input class="ci" id="ci" type="text" autocomplete="off" spellcheck="false" aria-label="说一句话">',
+     '<textarea class="ci" id="ci" rows="3" autocomplete="off" spellcheck="false" aria-label="说一句话"></textarea>')
+
 def uri(p, mime='image/png'):
     return f'data:{mime};base64,' + base64.b64encode(open(HERE + p, 'rb').read()).decode()
 def furi(p):
@@ -86,7 +89,7 @@ imgs = list(re.finditer(r'<img src="data:image/png;base64,[A-Za-z0-9+/=]+" alt="
 assert len(imgs) == 10, len(imgs)
 out, last = [], 0
 for k, m in enumerate(imgs):
-    tag = f'<img class="tg" src="{uri("r2v/gen/t_" + NAMES[k] + ".png")}" alt="" draggable="false">'
+    tag = f'<img class="tg" src="{uri("starry/out/nav-" + NAMES[k] + ".png")}" alt="" draggable="false">'
     pre = nav[last:m.start()]
     if pre.endswith('<b class="hgw">'):
         out.append(pre[:-len('<b class="hgw">')] + '<b class="hgw tgw">' + tag)
@@ -96,11 +99,10 @@ for k, m in enumerate(imgs):
 out.append(nav[last:])
 nav = ''.join(out)
 assert nav.count('class="tgw"') == 9 and nav.count('class="hgw tgw"') == 1
-# 2026-10-27 17:40 · state #10 browser: an 11th tag「浏览器 Navigateur」(r2v/gen/t_browser.png via b10v/proc10.py) at the end of the first group (after 外观),
-# so every existing index stays (rococo_v1 / search use 0, 1, 3; settings/files find theirs by label); nav IDX: browser 8, account 9, settings 10
+# state #10 browser: the 11th tag uses the starry house icon; existing navigation indexes stay unchanged.
 LOOK_END = '<em>Parure</em>外观<i class="lb"></i><i class="xs">✕<b style="font-size:4px">●</b>✕</i></span></div>'
 assert nav.count(LOOK_END) == 1
-nav = nav.replace(LOOK_END, LOOK_END + f'<div class="it" style="--i:8"><b class="tgw"><img class="tg" src="{uri("r2v/gen/t_browser.png")}" alt="" draggable="false"></b>'
+nav = nav.replace(LOOK_END, LOOK_END + f'<div class="it" style="--i:8"><b class="tgw"><img class="tg" src="{uri("starry/out/nav-browser.png")}" alt="" draggable="false"></b>'
                   '<span><em>Navigateur</em>浏览器<i class="lb"></i><i class="xs">✕<b style="font-size:4px">●</b>✕</i></span></div>')
 s = s[:nav0] + nav + s[nav1:]
 head = "(()=>{const b=document.body,rail=document.querySelector('.rail'),its=[...rail.querySelectorAll('.it')];"
@@ -300,10 +302,33 @@ def _rd(t):
     assert '%%RD_' not in t; return t
 css_all += '<style id="rococoV2Rpd">\n' + _rd(rd('rococo_v2_rpd.css')) + '\n</style>\n'
 RP_JS = _rd(rd('rococo_v2_rpd.js'))
+# 卷宗拉手 → 人物：fx-sparkle（30 帧）+ ballet-spin（61 帧），素材已压成无损 webp 放在 src/rpa/
+RPA_JS = rd('starry/rp_actor.js')
+RPA_JS = RPA_JS.replace('__RPA_FX__', json.dumps([uri('rpa/fx/f%02d.webp' % i, 'image/webp') for i in range(1, 31)]))
+RPA_JS = RPA_JS.replace('__RPA_SPIN__', json.dumps([uri('rpa/spin/f%02d.webp' % i, 'image/webp') for i in range(1, 62)]))
+css_all += '<style id="rococoV2Rpa">\n' + rd('starry/rp_actor.css') + '\n</style>\n'
+STARRY_CSS = rd('starry/starry.css')
+for key, filename in [('SKY', 'sky-field.png'), ('STAR', 'star-unit.png'), ('CASTLE', 'castle-silhouette.png'), ('RIVER', 'river-reflection.png')]:
+    placeholder = '__STARRY_' + key + '__'
+    assert STARRY_CSS.count(placeholder) == 1, placeholder
+    STARRY_CSS = STARRY_CSS.replace(placeholder, uri('starry/out/' + filename))
+assert STARRY_CSS.count('__STARRY_TOOL_CASTLE__') == 1
+STARRY_CSS = STARRY_CSS.replace('__STARRY_TOOL_CASTLE__', uri('starry/out/castle-field-pixel.png'))
+css_all += '<style id="starryPhase1">\n' + STARRY_CSS + '\n</style>\n'
+# 对话记录卡片的三段式异形像素轮廓（starry/pixel_cards.css + pixel_cards.js）
+css_all += '<style id="starryPixelCards">\n' + rd('starry/pixel_cards.css') + '\n</style>\n'
+# 像素字体：Ark Pixel 12px proportional（src/fonts/ark_pixel_12_zh.woff2，OFL）
+PIXEL_FONT_CSS = rd('starry/pixel_font.css').replace(
+    '__ARK_PIXEL__',
+    'data:font/woff2;base64,' + base64.b64encode(open(HERE + 'fonts/ark_pixel_12_zh.woff2', 'rb').read()).decode())
+css_all += '<style id="pixelFont">\n' + PIXEL_FONT_CSS + '\n</style>\n'
+s, send_count = re.subn(r'(<div class="send"[^>]*><img src=")data:image/png;base64,[A-Za-z0-9+/=]+(")', lambda match: match.group(1) + uri('starry/out/send-lamp.png') + match.group(2), s, count=1)
+assert send_count == 1, send_count
 s = s[:idx] + css_all + s[idx:]
 sub1('<body class="v-empty">', '<body class="v-empty ly-eg">')
+STARRY_SKY_JS = rd('starry/sky.js').replace('__STARRY_BACKGROUND__', uri('starry/out/night-river-bg.jpg', 'image/jpeg'))
 idx = s.rfind('</body>')
-s = s[:idx] + ''.join(f'<script>\n{J}\n</script>\n' for J in [EG_JS, FL_JS, ST_JS, SR_JS, BR_JS, CL_JS, TM_JS, rd('rococo_v2_nav.js'), RP_JS, rd('rococo_v2_rp.js')]) + s[idx:]
+s = s[:idx] + ''.join(f'<script>\n{J}\n</script>\n' for J in [EG_JS, FL_JS, ST_JS, SR_JS, BR_JS, CL_JS, TM_JS, rd('rococo_v2_nav.js'), RP_JS, rd('rococo_v2_rp.js'), RPA_JS, STARRY_SKY_JS, rd('starry/water_reflection.js'), rd('starry/pixel_cards.js')]) + s[idx:]
 
 # ---------------------------------------------------------------- big PNGs -> lossless WebP (pixel-identical, exact alpha) when smaller
 import io

@@ -1,0 +1,147 @@
+/* =====================================================================
+   像素字体 · Ark Pixel 12px proportional (zh_hans)
+   https://github.com/TakWolf/ark-pixel-font · SIL OFL 1.1（licenses/fonts/OFL-arkpixel.txt）
+
+   12px 是它的设计尺寸，只有 12 / 24 / 36… 这种整数倍才是锐的像素格子，
+   所以对话界面里正文、工具行、输入框、卷宗统一压到 12px。
+   装饰用的手写体（Pinyon / Corm）不在这一层里，仍然按原样。
+   ===================================================================== */
+
+@font-face {
+  font-family: 'ArkPixel';
+  src: url("__ARK_PIXEL__") format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+
+:root { --pxf: 'ArkPixel', 'PingFang SC', 'Microsoft YaHei', monospace; }
+
+/* 对话区：气泡、工具卡、结果卡、输入框、许可条、卷宗 */
+html body,
+html body .b,
+html body .b *,
+html body .row.out .b,
+html body .row.in .col > .b,
+html body .who,
+html body .dsep,
+html body .hint,
+html body .tn-h,
+html body .tn-h *,
+html body .tn-p,
+html body .ts-p,
+html body .ts-p *,
+html body .prf,
+html body .prf *,
+html body .so,
+html body .so *,
+html body .field,
+html body .field *,
+html body .slip,
+html body .slip *,
+html body .qcard,
+html body .qcard *,
+html body .folio,
+html body .folio *,
+html body .thread pre {
+  font-family: var(--pxf) !important;
+}
+
+/* 12px 的整数倍才不糊：正文 / 工具行 / 输入框 / 卡片一律 12，行高取 24 的格子 */
+html body .b,
+html body .row.out .b,
+html body .row.in .col > .b,
+html body .row.out .b.px-moon,
+html body .row.in .col > .b.px-star {
+  font-family: var(--pxf) !important;
+  font-size: 12px !important;
+  line-height: 2 !important;
+  letter-spacing: 0 !important;
+}
+html body .b *,
+html body .b code {
+  font-family: var(--pxf) !important;
+  font-size: inherit !important;
+}
+
+html body .tn-h .nm,
+html body .tn-h .ar,
+html body .tn-h .meta,
+html body .tn-h .tv-st,
+html body .tn-h .meta .n,
+html body .px-house .tn-h .nm,
+html body .px-house .tn-h .ar,
+html body .px-house .tn-h .meta,
+html body .ts-h,
+html body .ts-h *,
+html body .ts-list,
+html body .ts-list *,
+html body .so,
+html body .so *,
+html body .prf,
+html body .prf *,
+html body .thread pre {
+  font-family: var(--pxf) !important;
+  font-size: 12px !important;
+  line-height: 20px !important;
+  letter-spacing: 0 !important;
+}
+
+html body .field .ci,
+html body .field .ph,
+html body .field .pht,
+html body .field .pill,
+html body .field .mchip,
+html body .field .mc-m,
+html body .field .mc-t,
+html body .field .model {
+  font-size: 12px !important;
+  letter-spacing: 0 !important;
+}
+
+html body .px-house.tool .th .nm,
+html body .px-house.tool .th .ar,
+html body .px-house.tool .th .d,
+html body .px-house.tool .tb {
+  font-family: var(--pxf) !important;
+  font-size: 12px !important;
+  letter-spacing: 0 !important;
+}
+
+html body .who { font-size: 12px !important; letter-spacing: .18em !important; }
+html body .dsep span { font-size: 12px !important; letter-spacing: .18em !important; }
+
+/* 像素字体的边缘不要再被平滑糊一遍 */
+html body,
+html body .b,
+html body .tn-h,
+html body .field,
+html body .folio,
+html body .thread {
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: unset;
+  text-rendering: geometricPrecision;
+}
+
+/* 卷宗里的法语标签（Plan / Changes / Context / iv of iv / Bilan …）也换成像素字，
+   只留封面标题 Dossier 那枚手写体当招牌 */
+html body .folio .rd-in .sec h5 em,
+html body .folio .rd-tab em,
+html body .folio .rd-tab i,
+html body .folio .rd-cap .rd-t em,
+html body .folio .rd-chg .fx .p em,
+html body .folio .rd-chg .tv-tot,
+html body .folio .rd-in .sec h5 small,
+html body .folio .ts-bl,
+html body .folio .ts-v,
+html body .folio .rd-head .rd-ht {
+  font-family: var(--pxf) !important;
+  font-size: 12px !important;
+  font-style: normal !important;
+  letter-spacing: .06em !important;
+  line-height: 1.4 !important;
+}
+
+html body .folio .rd-head em {
+  font-family: 'Pinyon', serif !important;
+}
